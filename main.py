@@ -85,59 +85,6 @@ types.append(getTypes('type'))
 types.append(getTypes('abundance'))
 types.append(getTypes('destinity'))
 
-# Warunek pierwszy: budżet
-# 1. <1000
-# 2. 1000-3000
-# 3. >3000
-def entBudget():
-    n1 = 0 # <1000
-    n2 = 0 # 1000-3000
-    n3 = 0 # >3000
-    n11 = 0 # <1000 i nigdzie
-    n12 = 0 # <1000 i w kraju
-    n13 = 0 # <1000 i za granicą
-    n21 = 0 # 1000-3000 i nigdzie
-    n22 = 0 # 1000-3000 i w kraju
-    n23 = 0 # 1000-3000 i za granicą
-    n31 = 0 # >3000 i nigdzie
-    n32 = 0 # >3000 i w kraju
-    n33 = 0 # >3000 i za granicą
-
-    budget = data['budget']
-    destinity = data['destinity']
-    for i in range(0, len(budget)):
-        if (budget[i] == "<1000"):
-            n1 += 1
-            if(destinity[i] == "nowhere"):
-                n11 += 1
-            if (destinity[i] == "country"):
-                n12 += 1
-            if (destinity[i] == "aboard"):
-                n13 += 1
-        if (budget[i] == "1000-3000"):
-            n2 += 1
-            if (destinity[i] == "nowhere"):
-                n21 += 1
-            if (destinity[i] == "country"):
-                n22 += 1
-            if (destinity[i] == "aboard"):
-                n23 += 1
-        if (budget[i] == ">3000"):
-            n3 += 1
-            if(destinity[i] == "nowhere"):
-                n31 += 1
-            if (destinity[i] == "country"):
-                n32 += 1
-            if (destinity[i] == "aboard"):
-                n33 += 1
-    I1p = entropy(n11, n1) + entropy(n12, n1) + entropy(n13, n1)
-    I1m = entropy(N1-n11, n2+n3) + entropy(N2-n12, n2+n3) + entropy(N3-n13, n2+n3)
-    E1 = n1/100 * I1p + (100-n1)/100 * I1m
-    infProfit = ent - E1
-    print(I1p)
-    print(I1m)
-    print(E1)
-    print(infProfit)
 
 def partEntropy():
     informationProfit = []
