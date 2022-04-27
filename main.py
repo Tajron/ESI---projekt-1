@@ -54,39 +54,24 @@ def transform(name):
     return tColumn
 
 
-N1 = 0  # nigdzie
-N3 = 0  # w kraju
-N2 = 0  # za granicą
-
-# Entropia dla całego układu: I = 1.43253376700698
-destinity = data['destinity']
-for i in range(0, len(destinity)):
-    if(destinity[i] == "nowhere"):
-        N1 += 1
-    if (destinity[i] == "country"):
-         N2 += 1
-    if (destinity[i] == "aboard"):
-        N3 += 1
-ent = entropy(N1, 100) + entropy(N2, 100) + entropy(N3, 100)
-
-table = []
-table.append(transform('budget'))
-table.append(transform('transport'))
-table.append(transform('period'))
-table.append(transform('type'))
-table.append(transform('abundance'))
-table.append(transform('destinity'))
-
-types = []
-types.append(getTypes('budget'))
-types.append(getTypes('transport'))
-types.append(getTypes('period'))
-types.append(getTypes('type'))
-types.append(getTypes('abundance'))
-types.append(getTypes('destinity'))
 
 
-def partEntropy():
+def partEntropy(table):
+    N1 = 0  # nigdzie
+    N3 = 0  # w kraju
+    N2 = 0  # za granicą
+
+    # Entropia dla całego układu: I = 1.43253376700698
+    destinity = data['destinity']
+    for i in range (0, len (destinity)):
+        if (destinity[i] == "nowhere"):
+            N1 += 1
+        if (destinity[i] == "country"):
+            N2 += 1
+        if (destinity[i] == "aboard"):
+            N3 += 1
+    ent = entropy (N1, 100) + entropy (N2, 100) + entropy (N3, 100)
+
     informationProfit = []
     for i in range(0, len(table) - 1):
         n = []
@@ -112,23 +97,43 @@ def partEntropy():
             Im = entropy(n[j] - nPart[j][1] - nPart[j][2], 100 - N1) + \
                  entropy(n[j] - nPart[j][0] - nPart[j][2], 100 - N2) + \
                  entropy(n[j] - nPart[j][0] - nPart[j][1], 100 - N3)
-            print(Ip)
-            print(Im)
 
             E = (n[j]/100) * Ip + ((100 - n[j])/100) * Im
             infProfit = ent - E
             informationProfit.append(infProfit)
-            print(n)
-            print(nPart)
-            print(infProfit)
-            print()
+    return informationProfit
+
+table = []
+table.append(transform('budget'))
+table.append(transform('transport'))
+table.append(transform('period'))
+table.append(transform('type'))
+table.append(transform('abundance'))
+table.append(transform('destinity'))
+
+types = []
+types.append(getTypes('budget'))
+types.append(getTypes('transport'))
+types.append(getTypes('period'))
+types.append(getTypes('type'))
+types.append(getTypes('abundance'))
+types.append(getTypes('destinity'))
+counter =0
+types2 =[]
+for i in range(0,len(types)):
+    t =[]
+    for j in range(0,i):
+        t.append(counter)
+        counter+=1
+    types2.append(t)
+print(types2)
+
+tableDF = pandas.DataFrame(table)
+print(tableDF.transpose())
+partialEntropy = partEntropy(table)
+print(partialEntropy.index(max(partialEntropy)))
+print(partialEntropy)
+print(table)
 
 
-
-    print(informationProfit)
-    print(len(informationProfit))
-
-partEntropy()
-print(ent)
-
-
+#while
