@@ -1,9 +1,9 @@
+from asyncio.windows_events import NULL
 import pandas
 import math
 
 # Wczytanie danych
 data = pandas.read_csv("data.csv", header=0)
-
 # p(x) * log2(p(x))
 def entropy(n, N):
     p = n / N
@@ -82,7 +82,7 @@ def partEntropy(table):
             nX.append(0)
             nX.append(0)
             nX.append(0)
-            for k in range(0, 100):
+            for k in range(0, len(table[0])):#liczę ilość wierszy
                 if(table[i][k] == j):
                     sum += 1
                     for l in range(0, 3):
@@ -103,6 +103,7 @@ def partEntropy(table):
             informationProfit.append(infProfit)
     return informationProfit
 
+
 table = []
 table.append(transform('budget'))
 table.append(transform('transport'))
@@ -118,22 +119,57 @@ types.append(getTypes('period'))
 types.append(getTypes('type'))
 types.append(getTypes('abundance'))
 types.append(getTypes('destinity'))
-counter =0
-types2 =[]
-for i in range(0,len(types)):
+
+typesList =[]
+for  i in types:
     t =[]
     for j in range(0,i):
-        t.append(counter)
-        counter+=1
-    types2.append(t)
-print(types2)
-
-tableDF = pandas.DataFrame(table)
-print(tableDF.transpose())
-partialEntropy = partEntropy(table)
-print(partialEntropy.index(max(partialEntropy)))
-print(partialEntropy)
-print(table)
+        t.append(j)
+    typesList.append(t)
+    
+print(typesList)
 
 
-#while
+def getColumnAndTypeValue (index):
+    counter =0
+    for colId, i in enumerate(typesList):
+        for j in i:
+            if(counter == index):
+                return [colId, j]
+            counter+=1
+    return NULL
+
+
+def all_equal(iterator):
+    return len(set(iterator)) <= 1
+
+# partialEntropy = partEntropy(table)
+# colNValue = getColumnAndTypeValue(partialEntropy.index(max(partialEntropy)))
+# tableDF = pandas.DataFrame(table).transpose()
+# m=tableDF[colNValue[0]]==colNValue[1]
+# table1=tableDF[~m].to_numpy()
+# table2=tableDF[m].to_numpy()
+# print(table)
+# print(" ")
+# print(table1)
+# print(" ")
+# print(table2)
+
+print(all_equal([1,1,1,1,1,1]))
+print(all_equal([1,1,1,1,1,2]))
+#ze względu na to że tworzymy drzewo binarne nie możey uzyc pętli bo w każdej kolejnej iteracji musimy zrobić podział dla 2 table . Z tego względu wchodzi w grę jedynie rekurencja
+def countEntireEntropy (table):
+    partialEntropy = partEntropy(table)
+    if(all_equal(partialEntropy)):
+        return table #jeśli wszystkie entropie sa równe zraca podzialona tabele => z warunkiem jest problem,zdaje sie że źle rozumiem finalny wynik (funkcja wywala ze względu na za dużą ilośc iteracji)
+    colNValue = getColumnAndTypeValue(partialEntropy.index(max(partialEntropy)))
+    tableDF = pandas.DataFrame(table).transpose()
+    m=tableDF[colNValue[0]]==colNValue[1]
+    table1 = countEntireEntropy(tableDF[~m].transpose().to_numpy())
+    table2 = countEntireEntropy(tableDF[m].transpose().to_numpy())
+    table = []
+    table.append(table1)
+    table.append(table2)
+    return table # nie byłem w stanie sprawdzic czy funkcja podaje poprawny wynik
+
+print(countEntireEntropy(table))
